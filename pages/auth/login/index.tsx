@@ -51,30 +51,30 @@ const LoginPage: Page = () => {
         const values = getValues();
 
         try {
-            const res = await signIn("credentials", {
+            await signIn("credentials", {
                 email: values.email,
                 password: values.password,
-                // redirect: false,
-            });
+                redirect: false,
+            }).then(({ ok, error }: any) => {
+                if (ok) {
+                    reset();
+                    router.push("/");
+                } else {
+                    let message = "";
 
-            if (res && res.ok) {
-                reset();
-                router.push(res.url || "/");
-            } else {
-                let message = "";
+                    switch (error) {
+                        case "AUTHENTICATION_LOGIN_CREDENTIAL_NOT_FOUND":
+                            message = "Email hoặc mật khẩu không đúng";
+                    }
 
-                switch (res?.error) {
-                    case "AUTHENTICATION_LOGIN_CREDENTIAL_NOT_FOUND":
-                        message = "Email hoặc mật khẩu không đúng";
+                    msgs.current.show({
+                        sticky: true,
+                        severity: "error",
+                        detail: message,
+                        closable: false,
+                    });
                 }
-
-                msgs.current.show({
-                    sticky: true,
-                    severity: "error",
-                    detail: message,
-                    closable: false,
-                });
-            }
+            });
         } catch (e) {
             console.error("E", e);
 

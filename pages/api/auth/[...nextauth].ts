@@ -10,18 +10,18 @@ export default NextAuth({
                 email: { label: "Email", type: "text" },
                 password: { label: "Password", type: "password" },
             },
+
             async authorize(credentials, req) {
                 try {
                     const res = await axiosClient.post("/auth/login", {
                         email: credentials?.email,
                         password: credentials?.password,
                     });
-
-                    if (res.data && res.data.statusCode === 200) {
+                    if (res.data && res.data.statusCode === 201) {
                         return res.data.data;
+                    } else {
+                        return null;
                     }
-
-                    return null;
                 } catch (e: any) {
                     if (e.name === "AxiosError") {
                         throw new Error(e.response.data.message);
@@ -35,8 +35,8 @@ export default NextAuth({
     callbacks: {
         async signIn({ user, account }) {
             if (account?.type === "credentials") {
-                account.access_token = user.access_token;
-                account.refresh_token = user.refresh_token;
+                account.accessToken = user.access_token;
+                account.accessToken = user.refresh_token;
             }
 
             return true;
