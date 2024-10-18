@@ -6,7 +6,7 @@ import { LayoutContext } from "../../../layout/context/layoutcontext";
 import { InputText } from "primereact/inputtext";
 import { classNames } from "primereact/utils";
 import { Page } from "../../../types/types";
-import { getSession, signIn, useSession } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -16,7 +16,7 @@ import Link from "next/link";
 // Server-side function to check session
 export const getServerSideProps = async (context:any) => {
     const session = await getSession(context);
-
+    
     if (session) {
         // Redirect to the home page if the user is already authenticated
         return {

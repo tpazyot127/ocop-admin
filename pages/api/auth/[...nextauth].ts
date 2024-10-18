@@ -39,14 +39,14 @@ export default NextAuth({
     callbacks: {
         async signIn({ user, account }) {
             if (account?.type === "credentials") {
-                account.accessToken = user.access_token;
+                account.accessToken = user.accessToken;
             }
 
             return true;
         },
         jwt: async ({ token, account }) => {
             if (account && account.type === "credentials") {
-                token.accessToken = account.access_token;
+                token.accessToken = account.accessToken;
             }
 
             return token;
