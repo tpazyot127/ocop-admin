@@ -17,10 +17,14 @@ export default NextAuth({
                         email: credentials?.email,
                         password: credentials?.password,
                     });
-                    if (res.data && res.data.statusCode === 201) {
-                        return res.data.data;
-                    } else {
-                        return null;
+
+                    const user = res.data;
+                    if (user && res.status === 201) {
+                        if (!user.isAdmin) {
+                            throw new Error("User is not an administrator");
+                        }
+
+                        return user;
                     }
                 } catch (e: any) {
                     if (e.name === "AxiosError") {
@@ -36,7 +40,6 @@ export default NextAuth({
         async signIn({ user, account }) {
             if (account?.type === "credentials") {
                 account.accessToken = user.access_token;
-                account.accessToken = user.refresh_token;
             }
 
             return true;
@@ -44,7 +47,6 @@ export default NextAuth({
         jwt: async ({ token, account }) => {
             if (account && account.type === "credentials") {
                 token.accessToken = account.access_token;
-                token.refreshToken = account.refresh_token;
             }
 
             return token;

@@ -63,8 +63,14 @@ const LoginPage: Page = () => {
                     let message = "";
 
                     switch (error) {
-                        case "AUTHENTICATION_LOGIN_CREDENTIAL_NOT_FOUND":
+                        case "Invalid email or password":
                             message = "Email hoặc mật khẩu không đúng";
+                            break;
+                        case "User is not an administrator":
+                            message = "Tài khoản của bạn không phải quản trị viên";
+                            break;
+                        default:
+                            message = "Lỗi không xác định";
                     }
 
                     msgs.current.show({
@@ -76,8 +82,6 @@ const LoginPage: Page = () => {
                 }
             });
         } catch (e) {
-            console.error("E", e);
-
             msgs.current.show({
                 sticky: true,
                 severity: "error",
