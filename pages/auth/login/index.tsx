@@ -1,23 +1,43 @@
 import { useRouter } from "next/router";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Button } from "primereact/button";
 import { Password } from "primereact/password";
 import { LayoutContext } from "../../../layout/context/layoutcontext";
 import { InputText } from "primereact/inputtext";
 import { classNames } from "primereact/utils";
 import { Page } from "../../../types/types";
-import { signIn } from "next-auth/react";
+import { getSession, signIn, useSession } from "next-auth/react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Messages } from "primereact/messages";
 import Link from "next/link";
 
+// Server-side function to check session
+export const getServerSideProps = async (context:any) => {
+    const session = await getSession(context);
+
+    if (session) {
+        // Redirect to the home page if the user is already authenticated
+        return {
+            redirect: {
+                destination: '/',
+                permanent: false,
+            },
+        };
+    }
+
+    // If not authenticated, return empty props
+    return {
+        props: {},
+    };
+};
+
 const LoginPage: Page = () => {
     const [isLoading, setIsLoading] = useState(false);
     const { layoutConfig } = useContext(LayoutContext);
     const msgs = useRef<any>();
-
+    
     const router = useRouter();
     const containerClassName = classNames(
         "surface-ground flex align-items-center justify-content-center min-h-screen w-full overflow-hidden",

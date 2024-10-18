@@ -12,8 +12,29 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Messages } from "primereact/messages";
 import Link from "next/link";
 import axiosClient from "@lib/axios";
+import { getSession } from "next-auth/react";
 
-const LoginPage: Page = () => {
+// Server-side function to check session
+export const getServerSideProps = async (context:any) => {
+    const session = await getSession(context);
+
+    if (session) {
+        // Redirect to the home page if the user is already authenticated
+        return {
+            redirect: {
+                destination: '/',
+                permanent: false,
+            },
+        };
+    }
+
+    // If not authenticated, return empty props
+    return {
+        props: {},
+    };
+};
+
+const RegisterPage: Page = () => {
     const [isLoading, setIsLoading] = useState(false);
     const { layoutConfig } = useContext(LayoutContext);
     const msgs = useRef<any>();
@@ -256,8 +277,8 @@ const LoginPage: Page = () => {
     );
 };
 
-LoginPage.getLayout = function getLayout(page) {
+RegisterPage.getLayout = function getLayout(page) {
     return <>{page}</>;
 };
 
-export default LoginPage;
+export default RegisterPage;
