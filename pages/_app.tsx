@@ -11,6 +11,7 @@ import "../styles/demo/Demos.scss";
 import { SessionProvider } from "next-auth/react";
 import { SWRConfig } from "swr";
 import axiosClient from "@lib/axios";
+import { QueryProvider } from "../providers/query.provider";
 
 type Props = AppProps & {
     Component: Page;
@@ -23,17 +24,19 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
                 fetcher: (url) => axiosClient.get(url).then((res) => res.data),
             }}
         >
-            <SessionProvider session={session}>
-                <LayoutProvider>
-                    {Component.getLayout ? (
-                        Component.getLayout(<Component {...pageProps} />)
-                    ) : (
-                        <Layout>
-                            <Component {...pageProps} />
-                        </Layout>
-                    )}
-                </LayoutProvider>
-            </SessionProvider>
+            <QueryProvider>
+                <SessionProvider session={session}>
+                    <LayoutProvider>
+                        {Component.getLayout ? (
+                            Component.getLayout(<Component {...pageProps} />)
+                        ) : (
+                            <Layout>
+                                <Component {...pageProps} />
+                            </Layout>
+                        )}
+                    </LayoutProvider>
+                </SessionProvider>
+            </QueryProvider>
         </SWRConfig>
     );
 }
