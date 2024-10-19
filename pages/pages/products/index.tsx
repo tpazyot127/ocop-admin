@@ -17,7 +17,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { ProductService } from "../../../demo/service/ProductService";
 import { Demo } from "../../../types/types";
 
-const Crud = () => {
+const Products = () => {
     let emptyProduct: Demo.Product = {
         id: "",
         name: "",
@@ -183,9 +183,9 @@ const Crud = () => {
         return (
             <React.Fragment>
                 <div className="my-2">
-                    <Button label="New" icon="pi pi-plus" severity="success" className=" mr-2" onClick={openNew} />
+                    <Button label="Thêm mới" icon="pi pi-plus" severity="success" className=" mr-2" onClick={openNew} />
                     <Button
-                        label="Delete"
+                        label="Xoá"
                         icon="pi pi-trash"
                         severity="danger"
                         onClick={confirmDeleteSelected}
@@ -206,7 +206,7 @@ const Crud = () => {
                     chooseLabel="Import"
                     className="mr-2 inline-block"
                 />
-                <Button label="Export" icon="pi pi-upload" severity="help" onClick={exportCSV} />
+                <Button label="Xuất CSV" icon="pi pi-upload" severity="help" onClick={exportCSV} />
             </React.Fragment>
         );
     };
@@ -312,20 +312,20 @@ const Crud = () => {
 
     const productDialogFooter = (
         <>
-            <Button label="Cancel" icon="pi pi-times" text onClick={hideDialog} />
-            <Button label="Save" icon="pi pi-check" text onClick={saveProduct} />
+            <Button label="Huỷ" icon="pi pi-times" text onClick={hideDialog} />
+            <Button label="Lưu" icon="pi pi-check" text onClick={saveProduct} />
         </>
     );
     const deleteProductDialogFooter = (
         <>
-            <Button label="No" icon="pi pi-times" text onClick={hideDeleteProductDialog} />
-            <Button label="Yes" icon="pi pi-check" text onClick={deleteProduct} />
+            <Button label="Không" icon="pi pi-times" text onClick={hideDeleteProductDialog} />
+            <Button label="Có" icon="pi pi-check" text onClick={deleteProduct} />
         </>
     );
     const deleteProductsDialogFooter = (
         <>
-            <Button label="No" icon="pi pi-times" text onClick={hideDeleteProductsDialog} />
-            <Button label="Yes" icon="pi pi-check" text onClick={deleteSelectedProducts} />
+            <Button label="Không" icon="pi pi-times" text onClick={hideDeleteProductsDialog} />
+            <Button label="Có" icon="pi pi-check" text onClick={deleteSelectedProducts} />
         </>
     );
 
@@ -355,24 +355,17 @@ const Crud = () => {
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: "4rem" }}></Column>
                         <Column
-                            field="code"
-                            header="Code"
-                            sortable
-                            body={codeBodyTemplate}
-                            headerStyle={{ minWidth: "15rem" }}
-                        ></Column>
-                        <Column
                             field="name"
-                            header="Name"
+                            header="Tên sản phẩm"
                             sortable
                             body={nameBodyTemplate}
                             headerStyle={{ minWidth: "15rem" }}
                         ></Column>
-                        <Column header="Image" body={imageBodyTemplate}></Column>
-                        <Column field="price" header="Price" body={priceBodyTemplate} sortable></Column>
+                        <Column header="Hình ảnh" body={imageBodyTemplate}></Column>
+                        <Column field="price" header="Giá" body={priceBodyTemplate} sortable></Column>
                         <Column
                             field="category"
-                            header="Category"
+                            header="Danh mục"
                             sortable
                             body={categoryBodyTemplate}
                             headerStyle={{ minWidth: "10rem" }}
@@ -380,7 +373,7 @@ const Crud = () => {
                         <Column field="rating" header="Reviews" body={ratingBodyTemplate} sortable></Column>
                         <Column
                             field="inventoryStatus"
-                            header="Status"
+                            header="Trạng thái"
                             body={statusBodyTemplate}
                             sortable
                             headerStyle={{ minWidth: "10rem" }}
@@ -391,7 +384,7 @@ const Crud = () => {
                     <Dialog
                         visible={productDialog}
                         style={{ width: "450px" }}
-                        header="Product Details"
+                        header="Chi tiết sản phẩm"
                         modal
                         className="p-fluid"
                         footer={productDialogFooter}
@@ -406,7 +399,7 @@ const Crud = () => {
                             />
                         )}
                         <div className="field">
-                            <label htmlFor="name">Name</label>
+                            <label htmlFor="name">Tên sản phẩm</label>
                             <InputText
                                 id="name"
                                 value={product.name}
@@ -418,7 +411,7 @@ const Crud = () => {
                             {submitted && !product.name && <small className="p-invalid">Name is required.</small>}
                         </div>
                         <div className="field">
-                            <label htmlFor="description">Description</label>
+                            <label htmlFor="description">Mô tả</label>
                             <InputTextarea
                                 id="description"
                                 value={product.description}
@@ -430,7 +423,7 @@ const Crud = () => {
                         </div>
 
                         <div className="field">
-                            <label className="mb-3">Category</label>
+                            <label className="mb-3">Danh mục</label>
                             <div className="formgrid grid">
                                 <div className="field-radiobutton col-6">
                                     <RadioButton
@@ -477,7 +470,19 @@ const Crud = () => {
 
                         <div className="formgrid grid">
                             <div className="field col">
-                                <label htmlFor="price">Price</label>
+                                <label htmlFor="price">Giá</label>
+                                <InputNumber
+                                    id="price"
+                                    value={product.price}
+                                    onValueChange={(e) => onInputNumberChange(e, "price")}
+                                    mode="currency"
+                                    currency="USD"
+                                    locale="en-US"
+                                />
+                            </div>
+
+                            <div className="field col">
+                                <label htmlFor="price">Giá cũ</label>
                                 <InputNumber
                                     id="price"
                                     value={product.price}
@@ -488,7 +493,7 @@ const Crud = () => {
                                 />
                             </div>
                             <div className="field col">
-                                <label htmlFor="quantity">Quantity</label>
+                                <label htmlFor="quantity">Số lượng</label>
                                 <InputNumber
                                     id="quantity"
                                     value={product.quantity}
@@ -501,7 +506,7 @@ const Crud = () => {
                     <Dialog
                         visible={deleteProductDialog}
                         style={{ width: "450px" }}
-                        header="Confirm"
+                        header="Xác nhận"
                         modal
                         footer={deleteProductDialogFooter}
                         onHide={hideDeleteProductDialog}
@@ -510,7 +515,7 @@ const Crud = () => {
                             <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: "2rem" }} />
                             {product && (
                                 <span>
-                                    Are you sure you want to delete <b>{product.name}</b>?
+                                    Bạn có chắc muốn xoá bản ghi <b>{product.name}</b>?
                                 </span>
                             )}
                         </div>
@@ -519,7 +524,7 @@ const Crud = () => {
                     <Dialog
                         visible={deleteProductsDialog}
                         style={{ width: "450px" }}
-                        header="Confirm"
+                        header="Xác nhận"
                         modal
                         footer={deleteProductsDialogFooter}
                         onHide={hideDeleteProductsDialog}
@@ -535,4 +540,4 @@ const Crud = () => {
     );
 };
 
-export default Crud;
+export default Products;

@@ -33,7 +33,9 @@ const LandingPage: Page = () => {
                             height="50"
                             className="mr-0 lg:mr-2"
                         />
-                        <span className="text-900 font-medium text-2xl line-height-3 mr-8">SAKAI</span>
+                        <span className="text-900 font-medium text-2xl line-height-3 mr-8">
+                            HỢP TÁC XÃ PHÁT TRIỀN NÔNG THÔN VIỆT NAM
+                        </span>
                     </Link>
                     <StyleClass
                         nodeRef={menuRef as NodeRef}
@@ -575,7 +577,9 @@ const LandingPage: Page = () => {
                                     height="50"
                                     className="mr-2"
                                 />
-                                <span className="font-medium text-3xl text-900">SAKAI</span>
+                                <span className="font-medium text-3xl text-900">
+                                    HỢP TÁC XÃ PHÁT TRIỀN NÔNG THÔN VIỆT NAM
+                                </span>
                             </Link>
                         </div>
 
