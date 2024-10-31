@@ -340,7 +340,7 @@ const Products = () => {
                         ref={dt}
                         value={products}
                         selection={selectedProducts}
-                        onSelectionChange={(e) => setSelectedProducts(e.value as Demo.Product[])}
+                        onSelectionChange={(e) => setSelectedProducts(e.value as any)}
                         dataKey="id"
                         paginator
                         rows={10}
@@ -352,6 +352,7 @@ const Products = () => {
                         emptyMessage="No products found."
                         header={header}
                         responsiveLayout="scroll"
+                        selectionMode="multiple"
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: "4rem" }}></Column>
                         <Column

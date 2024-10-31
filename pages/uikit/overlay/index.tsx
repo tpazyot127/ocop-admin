@@ -5,7 +5,7 @@ import { Button } from "primereact/button";
 import { Sidebar } from "primereact/sidebar";
 import { Toast } from "primereact/toast";
 import { Column } from "primereact/column";
-import { DataTable, DataTableSelectionChangeEvent, DataTableSelectEvent } from "primereact/datatable";
+import { DataTable, DataTableSelectEvent } from "primereact/datatable";
 import { OverlayPanel } from "primereact/overlaypanel";
 import { InputText } from "primereact/inputtext";
 import { confirmPopup, ConfirmPopup } from "primereact/confirmpopup";
@@ -66,7 +66,7 @@ const OverlayDemo = () => {
         toast.current?.show({ severity: "info", summary: "Product Selected", detail: event.data.name, life: 3000 });
     };
 
-    const onSelectionChange = (e: DataTableSelectionChangeEvent<Demo.Product[]>): void => {
+    const onSelectionChange = (e: any): void => {
         setSelectedProduct(e.value as Demo.Product);
     };
 

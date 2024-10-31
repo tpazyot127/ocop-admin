@@ -2,6 +2,12 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import axiosClient from "@lib/axios";
 
+declare module "next-auth" {
+    interface User {
+        accessToken?: string;
+    }
+}
+
 export default NextAuth({
     providers: [
         CredentialsProvider({
