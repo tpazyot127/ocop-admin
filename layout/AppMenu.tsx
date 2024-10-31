@@ -38,6 +38,12 @@ const AppMenu = () => {
                 // { label: 'Misc', icon: 'pi pi-fw pi-circle', to: '/uikit/misc' }
             ],
         },
+        {
+            label: "Quản lý người dùng",
+            items: [
+                {label: "Tài khoản", icon: "pi pi-fw pi-user", to: "/pages/account"}
+            ]
+        }
         // {
         //     label: "Prime Blocks",
         //     items: [

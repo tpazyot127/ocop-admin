@@ -63,7 +63,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
         {
             label: "Người dùng",
             icon: "pi pi-fw pi-user",
-            url: "/user/info",
+            url: "/pages/account",
         },
         {
             separator: true,
