@@ -4,12 +4,12 @@ export const LayoutContext = createContext({} as LayoutContextProps);
 
 export const LayoutProvider = ({ children }: ChildContainerProps) => {
     const [layoutConfig, setLayoutConfig] = useState<LayoutConfig>({
-        ripple: true,
-        inputStyle: "outlined",
-        menuMode: "static",
-        colorScheme: "dark",
-        theme: "md-dark-indigo",
-        scale: 14,
+        ripple: false, //toggles ripple on and off
+        inputStyle: "outlined", //default style for input elements
+        menuMode: "static", //layout mode of the menu, valid values are "static" or "overlay"
+        colorScheme: "light", //color scheme of the template, valid values are "light", "dim" and "dark"
+        theme: "lara-light-indigo", //default component theme for PrimeReact
+        scale: 14, //size of the body font size to scale the whole application
     });
 
     const [layoutState, setLayoutState] = useState<LayoutState>({

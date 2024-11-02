@@ -38,9 +38,9 @@ const AppConfig = (props: AppConfigProps) => {
     };
 
     const changeTheme = (theme: string, colorScheme: string) => {
-        // themeContext.changeTheme?.(layoutConfig.theme, theme, "theme-css", () => {
-        //     setLayoutConfig((prevState: LayoutConfig) => ({ ...prevState, theme, colorScheme }));
-        // });
+        themeContext.changeTheme?.(layoutConfig.theme, theme, "theme-css", () => {
+            setLayoutConfig((prevState: LayoutConfig) => ({ ...prevState, theme, colorScheme }));
+        });
     };
 
     const decrementScale = () => {

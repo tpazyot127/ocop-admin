@@ -1,23 +1,43 @@
 import { useRouter } from "next/router";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Button } from "primereact/button";
 import { Password } from "primereact/password";
 import { LayoutContext } from "../../../layout/context/layoutcontext";
 import { InputText } from "primereact/inputtext";
 import { classNames } from "primereact/utils";
 import { Page } from "../../../types/types";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Messages } from "primereact/messages";
 import Link from "next/link";
 
+// Server-side function to check session
+export const getServerSideProps = async (context:any) => {
+    const session = await getSession(context);
+    
+    if (session) {
+        // Redirect to the home page if the user is already authenticated
+        return {
+            redirect: {
+                destination: '/',
+                permanent: false,
+            },
+        };
+    }
+
+    // If not authenticated, return empty props
+    return {
+        props: {},
+    };
+};
+
 const LoginPage: Page = () => {
     const [isLoading, setIsLoading] = useState(false);
     const { layoutConfig } = useContext(LayoutContext);
     const msgs = useRef<any>();
-
+    
     const router = useRouter();
     const containerClassName = classNames(
         "surface-ground flex align-items-center justify-content-center min-h-screen w-full overflow-hidden",
@@ -63,8 +83,14 @@ const LoginPage: Page = () => {
                     let message = "";
 
                     switch (error) {
-                        case "AUTHENTICATION_LOGIN_CREDENTIAL_NOT_FOUND":
+                        case "Invalid email or password":
                             message = "Email hoặc mật khẩu không đúng";
+                            break;
+                        case "User is not an administrator":
+                            message = "Tài khoản của bạn không phải quản trị viên";
+                            break;
+                        default:
+                            message = "Lỗi không xác định";
                     }
 
                     msgs.current.show({
@@ -76,8 +102,6 @@ const LoginPage: Page = () => {
                 }
             });
         } catch (e) {
-            console.error("E", e);
-
             msgs.current.show({
                 sticky: true,
                 severity: "error",

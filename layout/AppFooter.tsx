@@ -15,7 +15,7 @@ const AppFooter = () => {
                 className="mr-2"
             />
             by
-            <span className="font-medium ml-2">PrimeReact</span>
+            <span className="font-medium ml-2">{"VRDC"}</span>
         </div>
     );
 };

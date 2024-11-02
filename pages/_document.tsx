@@ -11,7 +11,7 @@ export default class MyDocument extends Document {
         return (
             <Html lang="en">
                 <Head>
-                    <link id="theme-css" href={`/themes/md-dark-indigo/theme.css`} rel="stylesheet"></link>
+                    <link id="theme-css" href={`/themes/md-light-indigo/theme.css`} rel="stylesheet"></link>
                 </Head>
                 <body>
                     <Main />
