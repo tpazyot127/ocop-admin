@@ -22,7 +22,7 @@ import { InputNumber } from "primereact/inputnumber";
 import { CountryService } from "../../../demo/service/CountryService";
 import { NodeService } from "../../../demo/service/NodeService";
 import { Demo } from "../../../types/types";
-import TreeNode from "primereact/treenode";
+import type { TreeNode } from "primereact/treenode";
 
 interface InputValue {
     name: string;

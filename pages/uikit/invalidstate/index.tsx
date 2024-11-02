@@ -83,7 +83,7 @@ const InvalidStateDemo = () => {
                         <label htmlFor="calendar">Calendar</label>
                         <Calendar
                             inputId="calendar"
-                            value={value3}
+                            value={value3 as any}
                             onChange={(e) => setValue3(e.value ?? "")}
                             className="p-invalid"
                             showIcon
