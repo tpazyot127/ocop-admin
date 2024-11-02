@@ -5,7 +5,9 @@ import { classNames } from "primereact/utils";
 import React, { forwardRef, useContext, useImperativeHandle, useRef } from "react";
 import { AppTopbarRef } from "../types/types";
 import { LayoutContext } from "./context/layoutcontext";
-import { SpeedDial } from "primereact/speeddial";
+import { Menubar } from "primereact/menubar";
+import { TieredMenu } from "primereact/tieredmenu";
+import { signOut } from "next-auth/react";
 
 const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     const { layoutConfig, layoutState, onMenuToggle, showProfileSidebar } = useContext(LayoutContext);
@@ -21,22 +23,60 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
 
     const items = [
         {
-            label: "Add",
-            icon: "pi pi-pencil",
+            label: "Khách hàng",
+            icon: "pi pi-fw pi-table",
+            items: [
+                {
+                    label: "New",
+                    icon: "pi pi-fw pi-user-plus",
+                    items: [
+                        {
+                            label: "Tạo mới",
+                            icon: "pi pi-fw pi-plus",
+                        },
+                        {
+                            label: "Sao chép",
+                            icon: "pi pi-fw pi-copy",
+                        },
+                    ],
+                },
+                {
+                    label: "Chỉnh sửa",
+                    icon: "pi pi-fw pi-user-edit",
+                },
+            ],
         },
         {
-            label: "Update",
-            icon: "pi pi-refresh",
+            label: "Sản phẩm",
+            icon: "pi pi-fw pi-shopping-cart",
+            items: [
+                {
+                    label: "Xem sản phẩm",
+                    icon: "pi pi-fw pi-list",
+                },
+                {
+                    label: "Tìm kiếm",
+                    icon: "pi pi-fw pi-search",
+                },
+            ],
         },
         {
-            label: "Delete",
-            icon: "pi pi-trash",
+            label: "Người dùng",
+            icon: "pi pi-fw pi-user",
+            url: "/pages/account",
         },
         {
-            label: "React Website",
-            icon: "pi pi-external-link",
+            separator: true,
+        },
+        {
+            label: "Đăng xuất",
+            icon: "pi pi-fw pi-sign-out",
+            command: ()=>{
+                signOut();
+            }
         },
     ];
+
     return (
         <div className="layout-topbar">
             <Link href="/" className="layout-topbar-logo">
@@ -73,21 +113,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
                     "layout-topbar-menu-mobile-active": layoutState.profileSidebarVisible,
                 })}
             >
-                <button type="button" className="p-link layout-topbar-button">
-                    <i className="pi pi-calendar"></i>
-                    <span>Calendar</span>
-                </button>
-                <SpeedDial className="p-link layout-topbar-button" model={items} radius={80} direction="down" />
-                <button type="button" className="p-link layout-topbar-button">
-                    <i className="pi pi-user"></i>
-                    <span>Tài khoản</span>
-                </button>
-                <Link href="/documentation">
-                    <button type="button" className="p-link layout-topbar-button">
-                        <i className="pi pi-cog"></i>
-                        <span>Cài đặt</span>
-                    </button>
-                </Link>
+                {layoutState.profileSidebarVisible ? <TieredMenu model={items} /> : <Menubar model={items}></Menubar>}
             </div>
         </div>
     );
