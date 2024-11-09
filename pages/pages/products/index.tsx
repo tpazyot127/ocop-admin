@@ -30,23 +30,23 @@ const Products = () => {
         inventoryStatus: "INSTOCK",
     };
 
-    const [products, setProducts] = useState<Demo.Product[]>([]);
+    // const [products, setProducts] = useState<Demo.Product[]>([]);
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
     const [product, setProduct] = useState<Demo.Product>(emptyProduct);
+    console.log("product", product);
     const [selectedProducts, setSelectedProducts] = useState<Demo.Product[]>([]);
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState("");
     const toast = useRef<Toast>(null);
     const dt = useRef<DataTable<Demo.Product[]>>(null);
 
-    useEffect(() => {
-        ProductService.getProducts().then((data) => setProducts(data));
-    }, []);
+    const { data: products } = ProductService.useGetProducts();
+    const { data: categories } = ProductService.useGetProductCategories();
 
     const formatCurrency = (value: number) => {
-        return value.toLocaleString("en-US", { style: "currency", currency: "USD" });
+        return value.toLocaleString("en-US", { style: "currency", currency: "VND" });
     };
 
     const openNew = () => {
@@ -96,7 +96,7 @@ const Products = () => {
                 });
             }
 
-            setProducts(_products);
+            // setProducts(_products);
             setProductDialog(false);
             setProduct(emptyProduct);
         }
@@ -113,8 +113,8 @@ const Products = () => {
     };
 
     const deleteProduct = () => {
-        let _products = products.filter((val) => val.id !== product.id);
-        setProducts(_products);
+        let _products = products?.filter((val: any) => val.id !== product.id);
+        // setProducts(_products);
         setDeleteProductDialog(false);
         setProduct(emptyProduct);
         toast.current?.show({ severity: "success", summary: "Successful", detail: "Product Deleted", life: 3000 });
@@ -150,8 +150,8 @@ const Products = () => {
     };
 
     const deleteSelectedProducts = () => {
-        let _products = products.filter((val) => !selectedProducts?.includes(val));
-        setProducts(_products);
+        let _products = products.filter((val: any) => !selectedProducts?.includes(val));
+        // setProducts(_products);
         setDeleteProductsDialog(false);
         setSelectedProducts([]);
         toast.current?.show({ severity: "success", summary: "Successful", detail: "Products Deleted", life: 3000 });
@@ -211,20 +211,11 @@ const Products = () => {
         );
     };
 
-    const codeBodyTemplate = (rowData: Demo.Product) => {
-        return (
-            <>
-                <span className="p-column-title">Code</span>
-                {rowData.code}
-            </>
-        );
-    };
-
     const nameBodyTemplate = (rowData: Demo.Product) => {
         return (
             <>
-                <span className="p-column-title">Name</span>
-                {rowData.name}
+                <span className="p-column-title">Tên</span>
+                {rowData.title}
             </>
         );
     };
@@ -232,7 +223,7 @@ const Products = () => {
     const imageBodyTemplate = (rowData: Demo.Product) => {
         return (
             <>
-                <span className="p-column-title">Image</span>
+                <span className="p-column-title">Hình ảnh</span>
                 <img
                     src={`/demo/images/product/${rowData.image}`}
                     alt={rowData.image}
@@ -246,7 +237,7 @@ const Products = () => {
     const priceBodyTemplate = (rowData: Demo.Product) => {
         return (
             <>
-                <span className="p-column-title">Price</span>
+                <span className="p-column-title">Giá</span>
                 {formatCurrency(rowData.price as number)}
             </>
         );
@@ -255,7 +246,7 @@ const Products = () => {
     const categoryBodyTemplate = (rowData: Demo.Product) => {
         return (
             <>
-                <span className="p-column-title">Category</span>
+                <span className="p-column-title">Danh Mục</span>
                 {rowData.category}
             </>
         );
@@ -274,9 +265,7 @@ const Products = () => {
         return (
             <>
                 <span className="p-column-title">Status</span>
-                <span className={`product-badge status-${rowData.inventoryStatus?.toLowerCase()}`}>
-                    {rowData.inventoryStatus}
-                </span>
+                {rowData.stock as number}
             </>
         );
     };
@@ -349,14 +338,14 @@ const Products = () => {
                         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
                         globalFilter={globalFilter}
-                        emptyMessage="No products found."
+                        emptyMessage="Không có sản phẩm"
                         header={header}
                         responsiveLayout="scroll"
                         selectionMode="multiple"
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: "4rem" }}></Column>
                         <Column
-                            field="name"
+                            field="title"
                             header="Tên sản phẩm"
                             sortable
                             body={nameBodyTemplate}
@@ -373,8 +362,8 @@ const Products = () => {
                         ></Column>
                         <Column field="rating" header="Reviews" body={ratingBodyTemplate} sortable></Column>
                         <Column
-                            field="inventoryStatus"
-                            header="Trạng thái"
+                            field="stock"
+                            header="Số lượng"
                             body={statusBodyTemplate}
                             sortable
                             headerStyle={{ minWidth: "10rem" }}
@@ -426,46 +415,18 @@ const Products = () => {
                         <div className="field">
                             <label className="mb-3">Danh mục</label>
                             <div className="formgrid grid">
-                                <div className="field-radiobutton col-6">
-                                    <RadioButton
-                                        inputId="category1"
-                                        name="category"
-                                        value="Accessories"
-                                        onChange={onCategoryChange}
-                                        checked={product.category === "Accessories"}
-                                    />
-                                    <label htmlFor="category1">Accessories</label>
-                                </div>
-                                <div className="field-radiobutton col-6">
-                                    <RadioButton
-                                        inputId="category2"
-                                        name="category"
-                                        value="Clothing"
-                                        onChange={onCategoryChange}
-                                        checked={product.category === "Clothing"}
-                                    />
-                                    <label htmlFor="category2">Clothing</label>
-                                </div>
-                                <div className="field-radiobutton col-6">
-                                    <RadioButton
-                                        inputId="category3"
-                                        name="category"
-                                        value="Electronics"
-                                        onChange={onCategoryChange}
-                                        checked={product.category === "Electronics"}
-                                    />
-                                    <label htmlFor="category3">Electronics</label>
-                                </div>
-                                <div className="field-radiobutton col-6">
-                                    <RadioButton
-                                        inputId="category4"
-                                        name="category"
-                                        value="Fitness"
-                                        onChange={onCategoryChange}
-                                        checked={product.category === "Fitness"}
-                                    />
-                                    <label htmlFor="category4">Fitness</label>
-                                </div>
+                                {categories?.map((category, index) => (
+                                    <div key={category.id} className="field-radiobutton col-6">
+                                        <RadioButton
+                                            inputId={`category${index}`}
+                                            name="category"
+                                            value={category.title}
+                                            onChange={onCategoryChange}
+                                            checked={product.category === category.category}
+                                        />
+                                        <label htmlFor={`category${index}`}>{category.title}</label>
+                                    </div>
+                                ))}
                             </div>
                         </div>
 
@@ -477,7 +438,7 @@ const Products = () => {
                                     value={product.price}
                                     onValueChange={(e) => onInputNumberChange(e, "price")}
                                     mode="currency"
-                                    currency="USD"
+                                    currency="VND"
                                     locale="en-US"
                                 />
                             </div>
@@ -486,10 +447,10 @@ const Products = () => {
                                 <label htmlFor="price">Giá cũ</label>
                                 <InputNumber
                                     id="price"
-                                    value={product.price}
+                                    value={product.oldPrice as number}
                                     onValueChange={(e) => onInputNumberChange(e, "price")}
                                     mode="currency"
-                                    currency="USD"
+                                    currency="VND"
                                     locale="en-US"
                                 />
                             </div>
@@ -497,7 +458,7 @@ const Products = () => {
                                 <label htmlFor="quantity">Số lượng</label>
                                 <InputNumber
                                     id="quantity"
-                                    value={product.quantity}
+                                    value={product.stock as number}
                                     onValueChange={(e) => onInputNumberChange(e, "quantity")}
                                 />
                             </div>

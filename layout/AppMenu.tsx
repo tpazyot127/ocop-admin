@@ -28,7 +28,7 @@ const AppMenu = () => {
                 // { label: 'Tree', icon: 'pi pi-fw pi-share-alt', to: '/uikit/tree' },
                 // { label: "Panel", icon: "pi pi-fw pi-tablet", to: "/uikit/panel" },
                 // { label: 'Overlay', icon: 'pi pi-fw pi-clone', to: '/uikit/overlay' },
-                { label: "Hình ảnh sản phẩm", icon: "pi pi-fw pi-image", to: "/uikit/media" },
+                // { label: "Hình ảnh sản phẩm", icon: "pi pi-fw pi-image", to: "/uikit/media" },
 
                 { label: "Sản phẩm", icon: "pi pi-shopping-cart", to: "/pages/products" },
                 // { label: "Menu", icon: "pi pi-fw pi-bars", to: "/uikit/menu", preventExact: true },

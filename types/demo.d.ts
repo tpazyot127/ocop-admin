@@ -217,4 +217,10 @@ declare namespace Demo {
         setId?: number;
         iconIdx?: number;
     };
+
+    export interface ProductCategory {
+        id: string;
+        title: string;
+        category: name;
+    }
 }

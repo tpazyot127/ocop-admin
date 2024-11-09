@@ -2,10 +2,11 @@ import axiosClient from "@lib/axios";
 import { Demo } from "../../types/types";
 import { useQuery } from "@tanstack/react-query";
 
-const productQueryKeys = {
-    all: ["products"],
-}
-
+const PRODUCT_CACHE_KEYS = {
+    list: "list",
+    byId: "byId",
+    category: "category",
+};
 export const ProductService = {
     getProductsSmall() {
         return fetch("/demo/data/products-small.json", { headers: { "Cache-Control": "no-cache" } })
@@ -21,11 +22,20 @@ export const ProductService = {
 
     useGetProducts() {
         const getProducts = async () => {
-            const res =  await axiosClient.get("/products");
+            const res = await axiosClient.get("/products");
             return res.data.products;
         };
 
-        return useQuery({ queryKey: productQueryKeys.all, queryFn: getProducts });
+        return useQuery({ queryKey: [PRODUCT_CACHE_KEYS.list], queryFn: getProducts });
+    },
+
+    useGetProductCategories() {
+        const getProductCategories = async () => {
+            const res = await axiosClient.get("/product-categories");
+            return res.data as Demo.ProductCategory[];
+        };
+
+        return useQuery({ queryKey: [PRODUCT_CACHE_KEYS.category], queryFn: getProductCategories });
     },
 
     getProductsWithOrdersSmall() {
