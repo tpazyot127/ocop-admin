@@ -19,10 +19,10 @@ import { Demo } from "../../../types/types";
 
 const Products = () => {
     let emptyProduct: Demo.Product = {
-        id: "",
-        name: "",
+        _id: "",
+        title: "",
         image: "",
-        description: "",
+        desc: "",
         category: "",
         price: 0,
         quantity: 0,
@@ -35,7 +35,6 @@ const Products = () => {
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
     const [product, setProduct] = useState<Demo.Product>(emptyProduct);
-    console.log("product", product);
     const [selectedProducts, setSelectedProducts] = useState<Demo.Product[]>([]);
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState("");
@@ -44,6 +43,8 @@ const Products = () => {
 
     const { data: products } = ProductService.useGetProducts();
     const { data: categories } = ProductService.useGetProductCategories();
+    const { mutate: addProduct } = ProductService.useCreateProduct();
+    const { mutate: updateProduct } = ProductService.useEditProduct();
 
     const formatCurrency = (value: number) => {
         return value.toLocaleString("en-US", { style: "currency", currency: "VND" });
@@ -71,32 +72,49 @@ const Products = () => {
     const saveProduct = () => {
         setSubmitted(true);
 
-        if (product.name.trim()) {
-            let _products = [...products];
-            let _product = { ...product };
-            if (product.id) {
-                const index = findIndexById(product.id);
+        if (product._id) {
+            updateProduct(
+                { id: product._id, product: product },
+                {
+                    onSuccess: () => {
+                        toast.current?.show({
+                            severity: "success",
+                            summary: "Successful",
+                            detail: "Cập nhật sản phẩm thành công",
+                            life: 3000,
+                        });
+                    },
+                    onError: (error) => {
+                        toast.current?.show({
+                            severity: "error",
+                            summary: "Error",
+                            detail: error.message,
+                            life: 3000,
+                        });
+                    },
+                },
+            );
+        } else {
+            const {_id, ...newProduct} = product
+            addProduct(newProduct, {
+                onSuccess: () => {
+                    toast.current?.show({
+                        severity: "success",
+                        summary: "Successful",
+                        detail: "Tạo sản phẩm thành công",
+                        life: 3000,
+                    });
+                },
+                onError: (error) => {
+                    toast.current?.show({
+                        severity: "error",
+                        summary: "Error",
+                        detail: error.message,
+                        life: 3000,
+                    });
+                },
+            });
 
-                _products[index] = _product;
-                toast.current?.show({
-                    severity: "success",
-                    summary: "Successful",
-                    detail: "Product Updated",
-                    life: 3000,
-                });
-            } else {
-                _product.id = createId();
-                _product.image = "product-placeholder.svg";
-                _products.push(_product);
-                toast.current?.show({
-                    severity: "success",
-                    summary: "Successful",
-                    detail: "Product Created",
-                    life: 3000,
-                });
-            }
-
-            // setProducts(_products);
             setProductDialog(false);
             setProduct(emptyProduct);
         }
@@ -118,27 +136,6 @@ const Products = () => {
         setDeleteProductDialog(false);
         setProduct(emptyProduct);
         toast.current?.show({ severity: "success", summary: "Successful", detail: "Product Deleted", life: 3000 });
-    };
-
-    const findIndexById = (id: string) => {
-        let index = -1;
-        for (let i = 0; i < products.length; i++) {
-            if (products[i].id === id) {
-                index = i;
-                break;
-            }
-        }
-
-        return index;
-    };
-
-    const createId = () => {
-        let id = "";
-        let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        for (let i = 0; i < 5; i++) {
-            id += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return id;
     };
 
     const exportCSV = () => {
@@ -389,23 +386,23 @@ const Products = () => {
                             />
                         )}
                         <div className="field">
-                            <label htmlFor="name">Tên sản phẩm</label>
+                            <label htmlFor="title">Tên sản phẩm</label>
                             <InputText
-                                id="name"
-                                value={product.name}
-                                onChange={(e) => onInputChange(e, "name")}
+                                id="title"
+                                value={product.title}
+                                onChange={(e) => onInputChange(e, "title")}
                                 required
                                 autoFocus
-                                className={classNames({ "p-invalid": submitted && !product.name })}
+                                className={classNames({ "p-invalid": submitted && !product.title })}
                             />
-                            {submitted && !product.name && <small className="p-invalid">Name is required.</small>}
+                            {submitted && !product.title && <small className="p-invalid">Name is required.</small>}
                         </div>
                         <div className="field">
-                            <label htmlFor="description">Mô tả</label>
+                            <label htmlFor="desc">Mô tả</label>
                             <InputTextarea
-                                id="description"
-                                value={product.description}
-                                onChange={(e) => onInputChange(e, "description")}
+                                id="desc"
+                                value={product.desc}
+                                onChange={(e) => onInputChange(e, "desc")}
                                 required
                                 rows={3}
                                 cols={20}
@@ -420,7 +417,7 @@ const Products = () => {
                                         <RadioButton
                                             inputId={`category${index}`}
                                             name="category"
-                                            value={category.title}
+                                            value={category.category}
                                             onChange={onCategoryChange}
                                             checked={product.category === category.category}
                                         />
@@ -477,7 +474,7 @@ const Products = () => {
                             <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: "2rem" }} />
                             {product && (
                                 <span>
-                                    Bạn có chắc muốn xoá bản ghi <b>{product.name}</b>?
+                                    Bạn có chắc muốn xoá bản ghi <b>{product.title}</b>?
                                 </span>
                             )}
                         </div>
