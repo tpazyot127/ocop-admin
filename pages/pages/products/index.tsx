@@ -16,6 +16,7 @@ import { classNames } from "primereact/utils";
 import React, { useEffect, useRef, useState } from "react";
 import { ProductService } from "../../../demo/service/ProductService";
 import { Demo } from "../../../types/types";
+import { formatCurrency } from "@utils/index";
 
 const Products = () => {
     let emptyProduct: Demo.Product = {
@@ -44,10 +45,6 @@ const Products = () => {
 
     const { data: products } = ProductService.useGetProducts();
     const { data: categories } = ProductService.useGetProductCategories();
-
-    const formatCurrency = (value: number) => {
-        return value.toLocaleString("en-US", { style: "currency", currency: "VND" });
-    };
 
     const openNew = () => {
         setProduct(emptyProduct);
