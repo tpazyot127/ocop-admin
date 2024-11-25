@@ -358,11 +358,8 @@ const TableDemo = () => {
     const imageBodyTemplate = (rowData: Demo.Product) => {
         return (
             <img
-                src={`/demo/images/product/${rowData.image}`}
-                onError={(e) =>
-                    (e.currentTarget.src = "https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png")
-                }
-                alt={rowData.image}
+                src={rowData.images[0]?.img}
+                alt={rowData.images[0]?.img}
                 className="shadow-2"
                 width={100}
             />
@@ -379,8 +376,8 @@ const TableDemo = () => {
 
     const statusBodyTemplate2 = (rowData: Demo.Product) => {
         return (
-            <span className={`product-badge status-${rowData.inventoryStatus?.toLowerCase()}`}>
-                {rowData.inventoryStatus}
+            <span className={`product-badge status-${rowData.stock}`}>
+                {rowData.stock}
             </span>
         );
     };
@@ -388,7 +385,7 @@ const TableDemo = () => {
     const rowExpansionTemplate = (data: Demo.Product) => {
         return (
             <div className="orders-subtable">
-                <h5>Orders for {data.name}</h5>
+                <h5>Orders for {data.title}</h5>
                 <DataTable value={data.orders} responsiveLayout="scroll">
                     <Column field="id" header="Id" sortable></Column>
                     <Column field="customer" header="Customer" sortable></Column>

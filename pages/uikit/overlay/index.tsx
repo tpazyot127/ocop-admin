@@ -81,8 +81,8 @@ const OverlayDemo = () => {
     );
     const imageBodyTemplate = (data: Demo.Product) => (
         <img
-            src={`/demo/images/product/${data.image}`}
-            alt={data.image}
+            src={data.images[0]?.img}
+            alt={data.images[0]?.img}
             className="product-image"
             width="60"
             style={{ boxShadow: "0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23)" }}
