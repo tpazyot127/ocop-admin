@@ -38,6 +38,68 @@ export const ProductService = {
         return useQuery({ queryKey: [PRODUCT_CACHE_KEYS.category], queryFn: getProductCategories });
     },
 
+<<<<<<< Updated upstream
+=======
+    useCreateProduct() {
+        const queryClient = useQueryClient();
+
+        const createProduct = async (product: Demo.Product) => {
+            const res = await axiosClient.post("/products/create", {
+                ...product,
+                brand: product.brand || "OCOP",
+                category: product.category || "hatdinhduong",
+                slug: product.title,
+            });
+
+            return res.data;
+        };
+        return useMutation({
+            mutationFn: createProduct,
+            onSuccess: () => {
+                queryClient.invalidateQueries({ queryKey: [PRODUCT_CACHE_KEYS.list] });
+            },
+        });
+    },
+    useUploadProductImages() {
+        const queryClient = useQueryClient();
+
+        const uploadProductImages = async (file: FormData) => {
+            const res = await axiosClient.post("/upload/images", file, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+            return res.data;
+        };
+
+        return useMutation({
+            mutationFn: uploadProductImages,
+            onSuccess: () => {
+                queryClient.invalidateQueries({ queryKey: [PRODUCT_CACHE_KEYS.list] });
+            },
+        });
+    },
+
+    useEditProduct() {
+        const queryClient = useQueryClient();
+
+        const editProduct = async ({ id, product }: { id: string; product: Demo.Product }) => {
+            const res = await axiosClient.put(`products/${id}`, {
+                ...product,
+            });
+
+            return res.data;
+        };
+
+        return useMutation({
+            mutationFn: editProduct,
+            onSuccess: () => {
+                queryClient.invalidateQueries({ queryKey: [PRODUCT_CACHE_KEYS.list] });
+            },
+        });
+    },
+
+>>>>>>> Stashed changes
     getProductsWithOrdersSmall() {
         return fetch("/demo/data/products-orders-small.json", { headers: { "Cache-Control": "no-cache" } })
             .then((res) => res.json())

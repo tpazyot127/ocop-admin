@@ -121,10 +121,18 @@ declare namespace Demo {
     type Product = {
         id?: string;
         code?: string;
+<<<<<<< Updated upstream
         name: string;
         description: string;
         image?: string;
+=======
+        title: string;
+        desc: string;
+        images: { img: string }[];
+        gallery: { thumb: string }[];
+>>>>>>> Stashed changes
         price?: number;
+        slug: string;
         category?: string;
         quantity?: number;
         inventoryStatus?: InventoryStatus;

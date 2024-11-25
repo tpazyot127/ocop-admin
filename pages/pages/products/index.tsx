@@ -16,17 +16,46 @@ import { classNames } from "primereact/utils";
 import React, { useEffect, useRef, useState } from "react";
 import { ProductService } from "../../../demo/service/ProductService";
 import { Demo } from "../../../types/types";
+import { Galleria } from "primereact/galleria";
 
+const galleriaResponsiveOptions = [
+    {
+        breakpoint: "1024px",
+        numVisible: 5,
+    },
+    {
+        breakpoint: "960px",
+        numVisible: 4,
+    },
+    {
+        breakpoint: "768px",
+        numVisible: 3,
+    },
+    {
+        breakpoint: "560px",
+        numVisible: 1,
+    },
+];
 const Products = () => {
     let emptyProduct: Demo.Product = {
+<<<<<<< Updated upstream
         id: "",
         name: "",
         image: "",
         description: "",
+=======
+        _id: "",
+        title: "",
+        images: [],
+        gallery: [],
+        desc: "",
+>>>>>>> Stashed changes
         category: "",
         price: 0,
         quantity: 0,
         rating: 0,
+        slug: "",
+        stock: 0,
         inventoryStatus: "INSTOCK",
     };
 
@@ -44,6 +73,44 @@ const Products = () => {
 
     const { data: products } = ProductService.useGetProducts();
     const { data: categories } = ProductService.useGetProductCategories();
+<<<<<<< Updated upstream
+=======
+    const { mutateAsync: addProduct } = ProductService.useCreateProduct();
+    const { mutateAsync: updateProduct } = ProductService.useEditProduct();
+    const { mutateAsync: uploadProductImages } = ProductService.useUploadProductImages();
+
+    const onUpload = async (image: FileUploadFilesEvent) => {
+        const files = image.files as File[];
+        const formData = new FormData();
+
+        files.forEach((file) => {
+            formData.append(`image`, file);
+        });
+
+        try {
+            const res = await uploadProductImages(formData);
+            if (res) {
+                setProduct((prev) => ({
+                    ...prev,
+                    images: [
+                        ...prev.images,
+                        ...res.map((item: string) => {
+                            return { img: item };
+                        }),
+                    ],
+                    gallery: [
+                        ...prev.gallery,
+                        ...res.map((item: string) => {
+                            return { thumb: item };
+                        }),
+                    ],
+                }));
+            }
+        } catch (error) {
+            console.error("Error uploading images:", error);
+        }
+    };
+>>>>>>> Stashed changes
 
     const formatCurrency = (value: number) => {
         return value.toLocaleString("en-US", { style: "currency", currency: "VND" });
@@ -68,14 +135,59 @@ const Products = () => {
         setDeleteProductsDialog(false);
     };
 
-    const saveProduct = () => {
+    const saveProduct = async () => {
         setSubmitted(true);
 
+<<<<<<< Updated upstream
         if (product.name.trim()) {
             let _products = [...products];
             let _product = { ...product };
             if (product.id) {
                 const index = findIndexById(product.id);
+=======
+        if (product._id) {
+            await updateProduct(
+                { id: product._id, product: product },
+                {
+                    onSuccess: () => {
+                        toast.current?.show({
+                            severity: "success",
+                            summary: "Successful",
+                            detail: "Cập nhật sản phẩm thành công",
+                            life: 3000,
+                        });
+                    },
+                    onError: (error) => {
+                        toast.current?.show({
+                            severity: "error",
+                            summary: "Error",
+                            detail: error.message,
+                            life: 3000,
+                        });
+                    },
+                },
+            );
+        } else {
+            const { _id, ...newProduct } = product;
+            await addProduct(newProduct, {
+                onSuccess: () => {
+                    toast.current?.show({
+                        severity: "success",
+                        summary: "Successful",
+                        detail: "Tạo sản phẩm thành công",
+                        life: 3000,
+                    });
+                },
+                onError: (error) => {
+                    toast.current?.show({
+                        severity: "error",
+                        summary: "Error",
+                        detail: error.message,
+                        life: 3000,
+                    });
+                },
+            });
+>>>>>>> Stashed changes
 
                 _products[index] = _product;
                 toast.current?.show({
@@ -150,7 +262,7 @@ const Products = () => {
     };
 
     const deleteSelectedProducts = () => {
-        let _products = products.filter((val: any) => !selectedProducts?.includes(val));
+        // let _products = products.filter((val: any) => !selectedProducts?.includes(val));
         // setProducts(_products);
         setDeleteProductsDialog(false);
         setSelectedProducts([]);
@@ -225,8 +337,13 @@ const Products = () => {
             <>
                 <span className="p-column-title">Hình ảnh</span>
                 <img
+<<<<<<< Updated upstream
                     src={`/demo/images/product/${rowData.image}`}
                     alt={rowData.image}
+=======
+                    src={rowData.images[0]?.img || "/demo/images/product/no-image.jpg"}
+                    alt={rowData.images[0]?.img}
+>>>>>>> Stashed changes
                     className="shadow-2"
                     width="100"
                 />
@@ -318,6 +435,14 @@ const Products = () => {
         </>
     );
 
+    const galleriaItemTemplate = (item: any) => {
+        return <img src={item.img} alt={item.alt} style={{ width: "100%", display: "block" }} />;
+    };
+
+    const galleriaThumbnailTemplate = (item: any) => (
+        <img src={item.img} alt={item.alt} style={{ width: "100%", display: "block" }} />
+    );
+
     return (
         <div className="grid crud-demo">
             <div className="col-12">
@@ -327,7 +452,7 @@ const Products = () => {
 
                     <DataTable
                         ref={dt}
-                        value={products}
+                        value={products?.reverse()}
                         selection={selectedProducts}
                         onSelectionChange={(e) => setSelectedProducts(e.value as any)}
                         dataKey="id"
@@ -398,7 +523,44 @@ const Products = () => {
                                 autoFocus
                                 className={classNames({ "p-invalid": submitted && !product.name })}
                             />
+<<<<<<< Updated upstream
                             {submitted && !product.name && <small className="p-invalid">Name is required.</small>}
+=======
+                            {submitted && !product.title && <small className="p-invalid">Name is required.</small>}
+                        </div>
+
+                        {product?.images.length > 0 && (
+                            <div className="field">
+                                <div className="card">
+                                    <h5>Hình ảnh</h5>
+                                    <Galleria
+                                        value={product.images}
+                                        responsiveOptions={galleriaResponsiveOptions}
+                                        numVisible={7}
+                                        circular
+                                        style={{ maxWidth: "800px", margin: "auto" }}
+                                        item={galleriaItemTemplate}
+                                        thumbnail={galleriaThumbnailTemplate}
+                                    ></Galleria>
+                                </div>
+                            </div>
+                        )}
+                        <div className="field">
+                            <label htmlFor="name">Hình ảnh sản phẩm</label>
+                            <FileUpload
+                                name="file"
+                                url="/upload"
+                                onSelect={onUpload}
+                                multiple
+                                accept="image/*"
+                                maxFileSize={1000000}
+                                chooseLabel="Thêm hình ảnh"
+                                uploadLabel="Tải lên"
+                                cancelLabel="Huỷ"
+                            />
+
+                            {submitted && !product.image && <small className="p-invalid">Hình ảnh là bắt buộc</small>}
+>>>>>>> Stashed changes
                         </div>
                         <div className="field">
                             <label htmlFor="description">Mô tả</label>
@@ -412,6 +574,16 @@ const Products = () => {
                             />
                         </div>
 
+                        <div className="field">
+                            <label htmlFor="name">Đánh giá</label>
+                            <Rating
+                                value={product.rating}
+                                onChange={(e) => onInputNumberChange(e, "rating")}
+                                cancel={false}
+                            />
+
+                            {submitted && !product.image && <small className="p-invalid">Hình ảnh là bắt buộc</small>}
+                        </div>
                         <div className="field">
                             <label className="mb-3">Danh mục</label>
                             <div className="formgrid grid">
