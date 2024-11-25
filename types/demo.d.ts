@@ -119,16 +119,19 @@ declare namespace Demo {
 
     //ProductService
     type Product = {
-        id?: string;
+        _id?: string;
         code?: string;
-        name: string;
-        description: string;
-        image?: string;
-        price?: number;
+        title: string;
+        desc: string;
+        images: { img: string }[];
+        gallery: { thumb: string }[];
+        price: number;
+        oldPrice: number;
+        slug: string;
         category?: string;
-        quantity?: number;
-        inventoryStatus?: InventoryStatus;
-        rating?: number;
+        stock: number;
+        // inventoryStatus?: InventoryStatus;
+        rating: number;
         orders?: ProductOrder[];
         [key: string]: string | string[] | number | boolean | undefined | ProductOrder[] | InventoryStatus;
     };
