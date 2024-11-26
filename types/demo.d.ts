@@ -117,6 +117,10 @@ declare namespace Demo {
         createdAt: number;
     }
 
+    export interface Image {
+        img: string;
+    }
+
     //ProductService
     type Product = {
         _id?: string;

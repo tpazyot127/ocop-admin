@@ -16,26 +16,11 @@ import { classNames } from "primereact/utils";
 import React, { useEffect, useRef, useState } from "react";
 import { ProductService } from "../../../demo/service/ProductService";
 import { Demo } from "../../../types/types";
+import { formatCurrency } from "@utils/index";
 import { Galleria } from "primereact/galleria";
+import ProductImages from "@pages/components/productImages";
 
-const galleriaResponsiveOptions = [
-    {
-        breakpoint: "1024px",
-        numVisible: 5,
-    },
-    {
-        breakpoint: "960px",
-        numVisible: 4,
-    },
-    {
-        breakpoint: "768px",
-        numVisible: 3,
-    },
-    {
-        breakpoint: "560px",
-        numVisible: 1,
-    },
-];
+
 const Products = () => {
     let emptyProduct: Demo.Product = {
         _id: "",
@@ -102,10 +87,6 @@ const Products = () => {
         } catch (error) {
             console.error("Error uploading images:", error);
         }
-    };
-
-    const formatCurrency = (value: number) => {
-        return value.toLocaleString("en-US", { style: "currency", currency: "VND" });
     };
 
     const openNew = () => {
@@ -358,14 +339,6 @@ const Products = () => {
         </>
     );
 
-    const galleriaItemTemplate = (item: any) => {
-        return <img src={item.img} alt={item.alt} style={{ width: "100%", display: "block" }} />;
-    };
-
-    const galleriaThumbnailTemplate = (item: any) => (
-        <img src={item.img} alt={item.alt} style={{ width: "100%", display: "block" }} />
-    );
-
     return (
         <div className="grid crud-demo">
             <div className="col-12">
@@ -449,22 +422,8 @@ const Products = () => {
                             {submitted && !product.title && <small className="p-invalid">Name is required.</small>}
                         </div>
 
-                        {product?.images.length > 0 && (
-                            <div className="field">
-                                <div className="card">
-                                    <h5>Hình ảnh</h5>
-                                    <Galleria
-                                        value={product.images}
-                                        responsiveOptions={galleriaResponsiveOptions}
-                                        numVisible={7}
-                                        circular
-                                        style={{ maxWidth: "800px", margin: "auto" }}
-                                        item={galleriaItemTemplate}
-                                        thumbnail={galleriaThumbnailTemplate}
-                                    ></Galleria>
-                                </div>
-                            </div>
-                        )}
+                        <ProductImages product={product}/>
+                        
                         <div className="field">
                             <label htmlFor="name">Hình ảnh sản phẩm</label>
                             <FileUpload
