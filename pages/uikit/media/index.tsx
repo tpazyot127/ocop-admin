@@ -59,14 +59,11 @@ const MediaDemo = () => {
         return (
             <div className="border-1 surface-border border-round m-1 text-center py-5">
                 <div className="mb-3">
-                    <img src={`/demo/images/product/${product.image}`} alt={product.name} className="w-6 shadow-2" />
+                    <img src={`/demo/images/product/${product.image}`} alt={product.title} className="w-6 shadow-2" />
                 </div>
                 <div>
-                    <h4 className="p-mb-1">{product.name}</h4>
+                    <h4 className="p-mb-1">{product.title}</h4>
                     <h6 className="mt-0 mb-3">${product.price}</h6>
-                    <span className={`product-badge status-${product.inventoryStatus?.toLowerCase()}`}>
-                        {product.inventoryStatus}
-                    </span>
                     <div className="car-buttons mt-5">
                         <Button rounded className="mr-2" icon="pi pi-search"></Button>
                         <Button rounded severity="success" className="mr-2" icon="pi pi-star"></Button>

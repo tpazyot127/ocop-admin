@@ -4,7 +4,7 @@ import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Dialog } from "primereact/dialog";
-import { FileUpload } from "primereact/fileupload";
+import { FileUpload, FileUploadFilesEvent } from "primereact/fileupload";
 import { InputNumber, InputNumberValueChangeEvent } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
@@ -17,26 +17,34 @@ import React, { useEffect, useRef, useState } from "react";
 import { ProductService } from "../../../demo/service/ProductService";
 import { Demo } from "../../../types/types";
 import { formatCurrency } from "@utils/index";
+import { Galleria } from "primereact/galleria";
+import ProductImages from "@pages/components/productImages";
+
 
 const Products = () => {
     let emptyProduct: Demo.Product = {
-        id: "",
-        name: "",
-        image: "",
-        description: "",
+        _id: "",
+        title: "",
+        images: [],
+        gallery: [],
+        desc: "",
         category: "",
+        oldPrice: 0,
         price: 0,
         quantity: 0,
+        slug: "",
+        stock: 0,
         rating: 0,
         inventoryStatus: "INSTOCK",
     };
+
+    // const toast = useRef<Toast>(null);
 
     // const [products, setProducts] = useState<Demo.Product[]>([]);
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
     const [product, setProduct] = useState<Demo.Product>(emptyProduct);
-    console.log("product", product);
     const [selectedProducts, setSelectedProducts] = useState<Demo.Product[]>([]);
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState("");
@@ -45,6 +53,41 @@ const Products = () => {
 
     const { data: products } = ProductService.useGetProducts();
     const { data: categories } = ProductService.useGetProductCategories();
+    const { mutateAsync: addProduct } = ProductService.useCreateProduct();
+    const { mutateAsync: updateProduct } = ProductService.useEditProduct();
+    const { mutateAsync: uploadProductImages } = ProductService.useUploadProductImages();
+
+    const onUpload = async (image: FileUploadFilesEvent) => {
+        const files = image.files as File[];
+        const formData = new FormData();
+
+        files.forEach((file) => {
+            formData.append(`image`, file);
+        });
+
+        try {
+            const res = await uploadProductImages(formData);
+            if (res) {
+                setProduct((prev) => ({
+                    ...prev,
+                    images: [
+                        ...prev.images,
+                        ...res.map((item: string) => {
+                            return { img: item };
+                        }),
+                    ],
+                    gallery: [
+                        ...prev.gallery,
+                        ...res.map((item: string) => {
+                            return { thumb: item };
+                        }),
+                    ],
+                }));
+            }
+        } catch (error) {
+            console.error("Error uploading images:", error);
+        }
+    };
 
     const openNew = () => {
         setProduct(emptyProduct);
@@ -65,38 +108,55 @@ const Products = () => {
         setDeleteProductsDialog(false);
     };
 
-    const saveProduct = () => {
+    const saveProduct = async () => {
         setSubmitted(true);
 
-        if (product.name.trim()) {
-            let _products = [...products];
-            let _product = { ...product };
-            if (product.id) {
-                const index = findIndexById(product.id);
-
-                _products[index] = _product;
-                toast.current?.show({
-                    severity: "success",
-                    summary: "Successful",
-                    detail: "Product Updated",
-                    life: 3000,
-                });
-            } else {
-                _product.id = createId();
-                _product.image = "product-placeholder.svg";
-                _products.push(_product);
-                toast.current?.show({
-                    severity: "success",
-                    summary: "Successful",
-                    detail: "Product Created",
-                    life: 3000,
-                });
-            }
-
-            // setProducts(_products);
-            setProductDialog(false);
-            setProduct(emptyProduct);
+        if (product._id) {
+            await updateProduct(
+                { id: product._id, product: product },
+                {
+                    onSuccess: () => {
+                        toast.current?.show({
+                            severity: "success",
+                            summary: "Successful",
+                            detail: "Cập nhật sản phẩm thành công",
+                            life: 3000,
+                        });
+                    },
+                    onError: (error) => {
+                        toast.current?.show({
+                            severity: "error",
+                            summary: "Error",
+                            detail: error.message,
+                            life: 3000,
+                        });
+                    },
+                },
+            );
+        } else {
+            const { _id, ...newProduct } = product;
+            await addProduct(newProduct, {
+                onSuccess: () => {
+                    toast.current?.show({
+                        severity: "success",
+                        summary: "Successful",
+                        detail: "Tạo sản phẩm thành công",
+                        life: 3000,
+                    });
+                },
+                onError: (error) => {
+                    toast.current?.show({
+                        severity: "error",
+                        summary: "Error",
+                        detail: error.message,
+                        life: 3000,
+                    });
+                },
+            });
         }
+
+        setProductDialog(false);
+        setProduct(emptyProduct);
     };
 
     const editProduct = (product: Demo.Product) => {
@@ -117,27 +177,6 @@ const Products = () => {
         toast.current?.show({ severity: "success", summary: "Successful", detail: "Product Deleted", life: 3000 });
     };
 
-    const findIndexById = (id: string) => {
-        let index = -1;
-        for (let i = 0; i < products.length; i++) {
-            if (products[i].id === id) {
-                index = i;
-                break;
-            }
-        }
-
-        return index;
-    };
-
-    const createId = () => {
-        let id = "";
-        let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        for (let i = 0; i < 5; i++) {
-            id += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return id;
-    };
-
     const exportCSV = () => {
         dt.current?.exportCSV();
     };
@@ -147,7 +186,7 @@ const Products = () => {
     };
 
     const deleteSelectedProducts = () => {
-        let _products = products.filter((val: any) => !selectedProducts?.includes(val));
+        // let _products = products.filter((val: any) => !selectedProducts?.includes(val));
         // setProducts(_products);
         setDeleteProductsDialog(false);
         setSelectedProducts([]);
@@ -193,21 +232,6 @@ const Products = () => {
         );
     };
 
-    const rightToolbarTemplate = () => {
-        return (
-            <React.Fragment>
-                <FileUpload
-                    mode="basic"
-                    accept="image/*"
-                    maxFileSize={1000000}
-                    chooseLabel="Import"
-                    className="mr-2 inline-block"
-                />
-                <Button label="Xuất CSV" icon="pi pi-upload" severity="help" onClick={exportCSV} />
-            </React.Fragment>
-        );
-    };
-
     const nameBodyTemplate = (rowData: Demo.Product) => {
         return (
             <>
@@ -222,8 +246,8 @@ const Products = () => {
             <>
                 <span className="p-column-title">Hình ảnh</span>
                 <img
-                    src={`/demo/images/product/${rowData.image}`}
-                    alt={rowData.image}
+                    src={rowData.images[0]?.img || "/demo/images/product/no-image.jpg"}
+                    alt={rowData.images[0]?.img}
                     className="shadow-2"
                     width="100"
                 />
@@ -290,7 +314,7 @@ const Products = () => {
                 <InputText
                     type="search"
                     onInput={(e) => setGlobalFilter(e.currentTarget.value)}
-                    placeholder="Search..."
+                    placeholder="Tìm kiếm..."
                 />
             </span>
         </div>
@@ -315,16 +339,24 @@ const Products = () => {
         </>
     );
 
+    const galleriaItemTemplate = (item: any) => {
+        return <img src={item.img} alt={item.alt} style={{ width: "100%", display: "block" }} />;
+    };
+
+    const galleriaThumbnailTemplate = (item: any) => (
+        <img src={item.img} alt={item.alt} style={{ width: "100%", display: "block" }} />
+    );
+
     return (
         <div className="grid crud-demo">
             <div className="col-12">
                 <div className="card">
                     <Toast ref={toast} />
-                    <Toolbar className="mb-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
+                    <Toolbar className="mb-4" left={leftToolbarTemplate}></Toolbar>
 
                     <DataTable
                         ref={dt}
-                        value={products}
+                        value={products?.reverse()}
                         selection={selectedProducts}
                         onSelectionChange={(e) => setSelectedProducts(e.value as any)}
                         dataKey="id"
@@ -379,36 +411,65 @@ const Products = () => {
                     >
                         {product.image && (
                             <img
-                                src={`/demo/images/product/${product.image}`}
-                                alt={product.image}
+                                src={product.images[0]?.img}
+                                alt={product.images[0]?.img}
                                 width="150"
                                 className="mt-0 mx-auto mb-5 block shadow-2"
                             />
                         )}
                         <div className="field">
-                            <label htmlFor="name">Tên sản phẩm</label>
+                            <label htmlFor="title">Tên sản phẩm</label>
                             <InputText
-                                id="name"
-                                value={product.name}
-                                onChange={(e) => onInputChange(e, "name")}
+                                id="title"
+                                value={product.title}
+                                onChange={(e) => onInputChange(e, "title")}
                                 required
                                 autoFocus
-                                className={classNames({ "p-invalid": submitted && !product.name })}
+                                className={classNames({ "p-invalid": submitted && !product.title })}
                             />
-                            {submitted && !product.name && <small className="p-invalid">Name is required.</small>}
+                            {submitted && !product.title && <small className="p-invalid">Name is required.</small>}
+                        </div>
+
+                        <ProductImages product={product}/>
+                        
+                        <div className="field">
+                            <label htmlFor="name">Hình ảnh sản phẩm</label>
+                            <FileUpload
+                                name="file"
+                                url="/upload"
+                                onSelect={onUpload}
+                                multiple
+                                accept="image/*"
+                                maxFileSize={1000000}
+                                chooseLabel="Thêm hình ảnh"
+                                uploadLabel="Tải lên"
+                                cancelLabel="Huỷ"
+                            />
+
+                            {submitted && !product.image && <small className="p-invalid">Hình ảnh là bắt buộc</small>}
                         </div>
                         <div className="field">
                             <label htmlFor="description">Mô tả</label>
                             <InputTextarea
-                                id="description"
-                                value={product.description}
-                                onChange={(e) => onInputChange(e, "description")}
+                                id="desc"
+                                value={product.desc}
+                                onChange={(e) => onInputChange(e, "desc")}
                                 required
                                 rows={3}
                                 cols={20}
                             />
                         </div>
 
+                        <div className="field">
+                            <label htmlFor="name">Đánh giá</label>
+                            <Rating
+                                value={product.rating}
+                                onChange={(e) => onInputNumberChange(e, "rating")}
+                                cancel={false}
+                            />
+
+                            {submitted && !product.rating && <small className="p-invalid">Đánh giá là bắt buộc</small>}
+                        </div>
                         <div className="field">
                             <label className="mb-3">Danh mục</label>
                             <div className="formgrid grid">
@@ -417,7 +478,7 @@ const Products = () => {
                                         <RadioButton
                                             inputId={`category${index}`}
                                             name="category"
-                                            value={category.title}
+                                            value={category.category}
                                             onChange={onCategoryChange}
                                             checked={product.category === category.category}
                                         />
@@ -443,9 +504,9 @@ const Products = () => {
                             <div className="field col">
                                 <label htmlFor="price">Giá cũ</label>
                                 <InputNumber
-                                    id="price"
+                                    id="oldPrice"
                                     value={product.oldPrice as number}
-                                    onValueChange={(e) => onInputNumberChange(e, "price")}
+                                    onValueChange={(e) => onInputNumberChange(e, "oldPrice")}
                                     mode="currency"
                                     currency="VND"
                                     locale="en-US"
@@ -454,9 +515,9 @@ const Products = () => {
                             <div className="field col">
                                 <label htmlFor="quantity">Số lượng</label>
                                 <InputNumber
-                                    id="quantity"
+                                    id="stock"
                                     value={product.stock as number}
-                                    onValueChange={(e) => onInputNumberChange(e, "quantity")}
+                                    onValueChange={(e) => onInputNumberChange(e, "stock")}
                                 />
                             </div>
                         </div>
@@ -474,7 +535,7 @@ const Products = () => {
                             <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: "2rem" }} />
                             {product && (
                                 <span>
-                                    Bạn có chắc muốn xoá bản ghi <b>{product.name}</b>?
+                                    Bạn có chắc muốn xoá bản ghi <b>{product.title}</b>?
                                 </span>
                             )}
                         </div>
