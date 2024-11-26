@@ -10,7 +10,13 @@ import ProductDetailDialog from "./productDialog";
 const imageBody = (data: Demo.Product) => {
     return (
         <>
-            <img className="shadow-2" src={`${data.image}`} alt={data.image} width="50" />
+            <span className="p-column-title">Hình ảnh</span>
+            <img
+                src={data.images[0]?.img || "/demo/images/product/no-image.jpg"}
+                alt={data.images[0]?.img}
+                className="shadow-2"
+                width="100"
+            />
         </>
     );
 };
@@ -61,7 +67,12 @@ export default function ProductDashboard() {
                     />
                 </DataTable>
             </div>
-            <ProductDetailDialog product={currentProduct} onHide={()=>{setCurrentProduct(null)}} />
+            <ProductDetailDialog
+                product={currentProduct}
+                onHide={() => {
+                    setCurrentProduct(null);
+                }}
+            />
         </>
     );
 }

@@ -30,7 +30,7 @@ export default function ProductDetailDialog(props: ProductDetailDialogProps) {
                 <div className="col-6">
                     <ProductImages product={product} />
                 </div>
-                <div className="col-6">
+                <div className="col-6 px-4">
                     <div className="field">
                         <label className="font-medium" htmlFor="name">
                             Tên sản phẩm
@@ -46,7 +46,6 @@ export default function ProductDetailDialog(props: ProductDetailDialogProps) {
 
                     {/* ADD CATEGORY */}
 
-                    {/* ADD RATING */}
                     <div className="field">
                         <label className="font-medium" htmlFor="name">Đánh giá</label>
                         <Rating value={product.rating} cancel={false}/>

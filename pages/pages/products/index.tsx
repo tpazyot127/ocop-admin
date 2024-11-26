@@ -339,14 +339,6 @@ const Products = () => {
         </>
     );
 
-    const galleriaItemTemplate = (item: any) => {
-        return <img src={item.img} alt={item.alt} style={{ width: "100%", display: "block" }} />;
-    };
-
-    const galleriaThumbnailTemplate = (item: any) => (
-        <img src={item.img} alt={item.alt} style={{ width: "100%", display: "block" }} />
-    );
-
     return (
         <div className="grid crud-demo">
             <div className="col-12">

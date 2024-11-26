@@ -32,8 +32,10 @@ interface ProductImagesProps {
     product: Demo.Product;
 }
 
+//TODO: Add empty state
 export default function ProductImages(props: ProductImagesProps) {
-  const {product} = props
+    const { product } = props;
+
     return (
         <>
             {product?.images.length > 0 && (
