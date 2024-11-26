@@ -1,7 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 
 import React from "react";
-import ProductDetailDialog, { CurrentProductProvider } from "./components/productDialog";
 import ProductDashboard from "./components/productDashboard";
 
 const Dashboard = () => {
